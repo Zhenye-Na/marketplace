@@ -1,0 +1,33 @@
+<% include partials/header %>
+
+<div class="container">
+    <header class="jumbotron">
+        <div class="container">
+            <h3>Welcome to DUT Marketplace</h3>
+            <p>View all the items in DUT now!</p>
+            <p>
+                <a class="btn btn-primary" href="/items/add">发布闲置</a>
+            </p>        
+        </div>
+    </header>
+
+    <div class="row">
+
+        <% campgrounds.forEach(function(campground) { %>
+            <div class="col-md-3 col-sm-6">
+
+                <div class="thumbnail">
+                    <img src="<%= campground.image %>">
+                    <div class="caption">
+                        <h4><%= campground.name %></h4>
+                    </div>
+                </div>
+
+            </div>
+        <% }); %>
+    </div>
+
+</div>
+
+
+<% include partials/footer %>
