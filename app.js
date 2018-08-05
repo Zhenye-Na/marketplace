@@ -7,6 +7,25 @@ var app = express();
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+// import mongoose
+var mongoose = require("mongoose");
+// mongoose.connect("mongodb://localhost/")
+
+// var personSchema = new mongoose.Schema({
+//     username: String,
+//     email: String,
+//     password: String,
+//     avatar_url: String,
+//     intro: String
+// })
+
+// var Person = mongoose.model("Person", personSchema);
+
+
+
+
+
+
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
@@ -35,8 +54,8 @@ app.post("/items", function(req, res) {
     var name = req.body.name;
     var image = req.body.image;
     var newItem = {name: name, image: image};
-    
     campgrounds.push(newItem);
+
     // redirect to items page
     res.redirect("/items");
 });
