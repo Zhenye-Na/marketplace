@@ -1,69 +1,135 @@
-// server.js
-// load the things we need
-var express = require("express");
+/* importing node module files */
+var express = require("express"),
+    bodyParser = require("body-parser"),
+    mongoose = require("mongoose");
+
+/* express server configuration */
 var app = express();
-
-// import body-parser
-var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+mongoose.connect("mongodb://localhost:27017/marketplace", { useNewUrlParser: true });
 
-// import mongoose
-var mongoose = require("mongoose");
-// mongoose.connect("mongodb://localhost/")
+/* set the view engine to ejs */
+app.set('view engine', 'ejs');
 
-// var personSchema = new mongoose.Schema({
+/* importing databaes */
+var Product = require("./models/product");
+
+
+
+// Demo add new products
+// Product.create(
+//     {
+//         title: "Apple MacBook Pro MF841LL/A 13.3-Inch Laptop with Retina Display (512 GB hard drive, 2.9 GHz dual-core Intel Core i5 processor, 8 GB 1866 MHz LPDDR3 RAM), Silver) (2015 version)",
+//         description: "2.9 GHz dual-core Intel Core i5 processor (Turbo Boost up to 3.3 GHz) with 3MB shared L3 cache; 8 GB 1866 MHz LPDDR3 RAM; 512 GB PCIe-based flash storage; 13.3-inch IPS Retina Display, 2560-by-1600 resolution; Intel Iris Graphics 6100; OS X El Capitan, Up to 10 Hours of Battery Life",
+//         category: "Laptops",
+//         quantity: 1,
+//         hidden: false,
+//         image: "https://images.unsplash.com/photo-1516542076529-1ea3854896f2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=4caa2b0c51fbb1685b0c1a6a08b74dac&auto=format&fit=crop&w=1351&q=80"
+//     },
+//     function(err, newproduct) {
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             console.log(newproduct);
+//         }
+//     }
+// );
+
+// users Collection
+// var userSchema = new mongoose.Schema({
 //     username: String,
-//     email: String,
+//     email: { type: String, unique: true, required: true, validate: emailValidator },
+//     intro: String,
+//     address: String,
 //     password: String,
 //     avatar_url: String,
-//     intro: String
-// })
+//     products: [
+//         {
+//             type: mongoose.Schema.Types.ObjectId,
+//             ref: "Product"
+//         }
+//     ]
+// });
+// var User = mongoose.model("User", userSchema);
 
-// var Person = mongoose.model("Person", personSchema);
+// var UserSchema = new mongoose.Schema({
+//   email: {
+//     type: String,
+//     unique: true,
+//     required: true,
+//     trim: true
+//   },
+//   username: {
+//     type: String,
+//     unique: true,
+//     required: true,
+//     trim: true
+//   },
+//   password: {
+//     type: String,
+//     required: true,
+//   },
+//   passwordConf: {
+//     type: String,
+//     required: true,
+//   }
+// });
 
 
-
-
-
-
-// set the view engine to ejs
-app.set('view engine', 'ejs');
 
 // index page 
 app.get("/", function(req, res) {
     res.render("landing");
 });
 
-var campgrounds = [
-    {name: "hha", image: "https://images.pexels.com/photos/60006/spring-tree-flowers-meadow-60006.jpeg?cs=srgb&dl=nature-flowers-sun-60006.jpg&fm=jpg"},
-    {name: "hha", image: "https://steemitimages.com/DQmYNHVdnMmVyLBcUHvp17gHXP3fzSEg9tqXEVkGVnTjk4V/pexels-photo.jpg"},
-    {name: "hha", image: "http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/3h/x2/p03hx26b.jpg"},
-    {name: "hha", image: "https://images.pexels.com/photos/60006/spring-tree-flowers-meadow-60006.jpeg?cs=srgb&dl=nature-flowers-sun-60006.jpg&fm=jpg"},
-    {name: "hha", image: "https://steemitimages.com/DQmYNHVdnMmVyLBcUHvp17gHXP3fzSEg9tqXEVkGVnTjk4V/pexels-photo.jpg"},
-    {name: "hha", image: "http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/3h/x2/p03hx26b.jpg"}
-    ];
 
-// items page
+// INDEX - Show all products
 app.get("/items",  function(req, res) {
-    res.render("items", {campgrounds: campgrounds});
+    // get all items from db
+    Product.find({}, function(err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("index", {products: allProducts});
+        }
+    });
 });
 
-// Add new items page
+// CREATE - Add new product to database
 app.post("/items", function(req, res) {
     // get data
-    var name = req.body.name;
+    var title = req.body.title;
     var image = req.body.image;
-    var newItem = {name: name, image: image};
-    campgrounds.push(newItem);
+    var desc = req.body.description;
+    var newProduct = {title: title, image: image, description: desc};
 
-    // redirect to items page
-    res.redirect("/items");
+    // create a new item and save to database
+    Product.create(newProduct, function(err, newproduct) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/items");
+        }
+    });
 });
 
-//
+// NEW - Show form to add new product
 app.get("/items/add", function(req, res) {
     res.render("add.ejs");
-})
+});
+
+// SHOW - Show product information
+app.get("/items/:id", function(req, res) {
+    // find the prodcut with specific ID
+    Product.findById(req.params.id, function(err, foundProduct){
+        if (err) {
+            console.log(err);
+        } else {
+            // render show template with that product
+            res.render("show", {product: foundProduct});
+        }
+    });
+});
 
 
 app.listen(process.env.PORT, process.env.IP, function() {
