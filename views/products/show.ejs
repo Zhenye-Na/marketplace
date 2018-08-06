@@ -1,0 +1,59 @@
+<% include ../partials/header %>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <p class="lead">MarketPlace</p>
+                <div class="list-group">
+                    <li class="list-group-item"><%= product.title %></li>
+                    <li class="list-group-item">Price {new & old}</li>
+                    <li class="list-group-item">Tags</li>
+                    <li class="list-group-item">User info</li>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="thumbnail">
+                    <img class="img-responsive" src="<%= product.image %>">
+                    <!--<div class="caption-full">-->
+                    <!--    <h4 class="pull-right">Price will be here!</h4>-->
+                    <!--</div>-->
+                    <!--<h4><%= product.title %></h4>-->
+                    <p><%= product.description %></p>
+                </div>
+                <div class="well">
+                    <div class="text-right">
+                        <p>
+                            <a class="btn btn-success" href="/items/<%= product._id %>/comments/new">Comment</a>
+                        </p>
+                    </div>
+                    <% product.comments.forEach(function(comment){ %>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong><%= comment.author %></strong>
+                            <span class="pull-right">10 days ago</span>
+                            <p>
+                                <%= comment.text %>
+                            </p>
+                        </div>
+                    </div>
+                <% }) %>
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <div class="img-preview">
+                    <div class="thumbnail">
+                        <img class="img-responsive" src="<%= product.image %>">
+                    </div>
+                    <div class="thumbnail">
+                        <img class="img-responsive" src="<%= product.image %>">
+                    </div>
+                </div>
+             </div>
+
+        </div>
+
+    </div>
+
+
+<% include ../partials/footer %>

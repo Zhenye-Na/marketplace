@@ -1,0 +1,36 @@
+<% include ../partials/header %>
+
+    <div class="container">
+        <header class="jumbotron">
+            <div class="container">
+                <h3>Welcome to DUT Marketplace</h3>
+                <p>View all the items in DUT now!</p>
+                <p>
+                    <a class="btn btn-primary" href="/items/new">发布闲置</a>
+                </p>        
+            </div>
+        </header>
+    
+        <div class="row" style="display:flex; flex-wrap: wrap;">
+    
+            <% products.forEach(function(product) { %>
+                <div class="col-md-3 col-sm-6">
+    
+                    <div class="thumbnail">
+                        <img src="<%= product.image %>">
+                        <div class="caption">
+                            <p><%= product.title %></p>
+                        </div>
+                        <p>
+                            <a href="/items/<%= product._id %>" class="btn btn-info">More Info</a>
+                        </p>
+                    </div>
+    
+                </div>
+            <% }); %>
+        </div>
+    
+    </div>
+
+
+<% include ../partials/footer %>

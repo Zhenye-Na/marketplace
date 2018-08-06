@@ -1,80 +1,55 @@
 /* importing node module files */
-var express = require("express"),
-    bodyParser = require("body-parser"),
-    mongoose = require("mongoose");
+var express       = require("express"),
+    bodyParser    = require("body-parser"),
+    passport      = require("passport"),
+    LocalStrategy = require("passport-local"),
+    mongoose      = require("mongoose"),
+    seedDB        = require("./seeds");
+
+seedDB();
+
+
+/* importing databaes */
+var Product = require("./models/product"),
+    User    = require("./models/user"),
+    Comment = require("./models/comment");
+
 
 /* express server configuration */
 var app = express();
-app.use(bodyParser.urlencoded({extended: true}));
 mongoose.connect("mongodb://localhost:27017/marketplace", { useNewUrlParser: true });
+
+
+/* body parser configuration */
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+/* passport authenticator initialization */
+app.use(require("express-session")({
+    secret: "Launched by Zhenye Na in Aug. 2018 in Urbana, U.S.",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+// passport.use(User.createStrategy());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+app.use(function(req, res, next) {
+    res.locals.currentUser = req.user;
+    next();
+});
 
 /* set the view engine to ejs */
 app.set('view engine', 'ejs');
 
-/* importing databaes */
-var Product = require("./models/product");
 
-
-
-// Demo add new products
-// Product.create(
-//     {
-//         title: "Apple MacBook Pro MF841LL/A 13.3-Inch Laptop with Retina Display (512 GB hard drive, 2.9 GHz dual-core Intel Core i5 processor, 8 GB 1866 MHz LPDDR3 RAM), Silver) (2015 version)",
-//         description: "2.9 GHz dual-core Intel Core i5 processor (Turbo Boost up to 3.3 GHz) with 3MB shared L3 cache; 8 GB 1866 MHz LPDDR3 RAM; 512 GB PCIe-based flash storage; 13.3-inch IPS Retina Display, 2560-by-1600 resolution; Intel Iris Graphics 6100; OS X El Capitan, Up to 10 Hours of Battery Life",
-//         category: "Laptops",
-//         quantity: 1,
-//         hidden: false,
-//         image: "https://images.unsplash.com/photo-1516542076529-1ea3854896f2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=4caa2b0c51fbb1685b0c1a6a08b74dac&auto=format&fit=crop&w=1351&q=80"
-//     },
-//     function(err, newproduct) {
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log(newproduct);
-//         }
-//     }
-// );
-
-// users Collection
-// var userSchema = new mongoose.Schema({
-//     username: String,
-//     email: { type: String, unique: true, required: true, validate: emailValidator },
-//     intro: String,
-//     address: String,
-//     password: String,
-//     avatar_url: String,
-//     products: [
-//         {
-//             type: mongoose.Schema.Types.ObjectId,
-//             ref: "Product"
-//         }
-//     ]
-// });
-// var User = mongoose.model("User", userSchema);
-
-// var UserSchema = new mongoose.Schema({
-//   email: {
-//     type: String,
-//     unique: true,
-//     required: true,
-//     trim: true
-//   },
-//   username: {
-//     type: String,
-//     unique: true,
-//     required: true,
-//     trim: true
-//   },
-//   password: {
-//     type: String,
-//     required: true,
-//   },
-//   passwordConf: {
-//     type: String,
-//     required: true,
-//   }
-// });
-
+/* static pages configuration */
+app.use(express.static(__dirname + '/public'));
 
 
 // index page 
@@ -90,10 +65,14 @@ app.get("/items",  function(req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("index", {products: allProducts});
+            res.render("products/index", {
+                products: allProducts,
+                currentUser: req.user
+            });
         }
     });
 });
+
 
 // CREATE - Add new product to database
 app.post("/items", function(req, res) {
@@ -113,25 +92,109 @@ app.post("/items", function(req, res) {
     });
 });
 
+
 // NEW - Show form to add new product
-app.get("/items/add", function(req, res) {
-    res.render("add.ejs");
+app.get("/items/new", function(req, res) {
+    res.render("products/new");
 });
+
 
 // SHOW - Show product information
 app.get("/items/:id", function(req, res) {
     // find the prodcut with specific ID
-    Product.findById(req.params.id, function(err, foundProduct){
+    Product.findById(req.params.id).populate("comments").exec(function(err, foundProduct){
         if (err) {
             console.log(err);
         } else {
             // render show template with that product
-            res.render("show", {product: foundProduct});
+            res.render("products/show", {product: foundProduct});
         }
     });
 });
 
 
+/* ======================================= Comment ======================================= */
+app.get("/items/:id/comments/new", isLoggedIn, function(req, res) {
+    // find the prodcut with specific ID
+    Product.findById(req.params.id,  function(err, foundProduct) {
+       if (err) {
+           console.log(err);
+       } else {
+           console.log(foundProduct);
+           res.render("comments/new", {product: foundProduct});
+       }
+    });
+});
+
+
+app.post("/items/:id/comments", isLoggedIn, function(req, res) {
+    Product.findById(req.params.id, function(err, foundProduct) {
+        if (err) {
+            console.log(err);
+            res.redirect("/items");
+        } else {
+            Comment.create(req.body.comment, function(err, comment) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    foundProduct.comments.push(comment);
+                    foundProduct.save();
+                    res.redirect("/items/" + foundProduct._id);
+                }
+            });
+        }
+    });
+});
+
+
+/* ======================================= Authentication ======================================= */
+app.get("/signup", function(req, res) {
+    res.render("signup");
+});
+
+
+app.post("/signup", function(req, res) {
+    var newUser = new User({
+        email: req.body.username
+    });
+    User.register(newUser, req.body.password, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.render("signup");
+        }
+        passport.authenticate("local")(req, res, function() {
+            res.redirect("/items");
+        });
+    });
+});
+
+
+app.get("/login", function(req, res) {
+    res.render("login");
+});
+
+app.post("/login", passport.authenticate("local", {
+        successRedirect: "/items",
+        failureRedirect: "/login"
+    }), function(req, res) {
+});
+
+
+app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/items");
+});
+
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login");
+}
+
+
 app.listen(process.env.PORT, process.env.IP, function() {
-    console.log("Everything is working fine now!");
+    console.log("Everything is working fine");
+    console.log("We've got a server");
 });
