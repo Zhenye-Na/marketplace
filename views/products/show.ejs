@@ -9,9 +9,18 @@
                     <li class="list-group-item">Price {new & old}</li>
                     <li class="list-group-item">Tags</li>
                     <li class="list-group-item">User info</li>
+                    <li class="list-group-item">
+                        <!--<div class="thumbnail">-->
+                        <!--    <img src="<%= product.author.avatar_url %>">-->
+                        <!--</div>-->
+                        <%= product.author.email || "Not Available" %>
+                    </li>
+                    <li class="list-group-item"><%= product.date || "Not Available" %></li>
                 </div>
             </div>
             <div class="col-md-7">
+
+                <!--Product information-->
                 <div class="thumbnail">
                     <img class="img-responsive" src="<%= product.image %>">
                     <!--<div class="caption-full">-->
@@ -20,6 +29,8 @@
                     <!--<h4><%= product.title %></h4>-->
                     <p><%= product.description %></p>
                 </div>
+
+                <!--Comments-->
                 <div class="well">
                     <div class="text-right">
                         <p>
@@ -29,8 +40,8 @@
                     <% product.comments.forEach(function(comment){ %>
                     <div class="row">
                         <div class="col-md-12">
-                            <strong><%= comment.author %></strong>
-                            <span class="pull-right">10 days ago</span>
+                            <strong><%= comment.author.username %></strong>
+                            <span class="pull-right"><%= comment.date %></span>
                             <p>
                                 <%= comment.text %>
                             </p>

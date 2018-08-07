@@ -21,7 +21,7 @@ var data = [
 ];
 
 function seedDB() {
-    // User.remove({}, function(err) {
+    // Comment.remove({}, function(err) {
     //     if (err) {
     //         console.log(err);
     //     }
@@ -40,7 +40,7 @@ function seedDB() {
                 if (err) {
                     console.log(err);
                 } else {
-                    console.log("product added.")
+                    console.log("product added.");
                     
                     // create Comment
                     Comment.create(
@@ -56,10 +56,10 @@ function seedDB() {
                                 console.log("New comment created.");
                             }
                         }
-                    )
+                    );
                 }
-            })
-        })
+            });
+        });
     });
     
 }

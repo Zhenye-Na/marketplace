@@ -11,6 +11,13 @@ var productSchema = new mongoose.Schema({
             ref: "Comment"
         }
     ],
+    author: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    },
     contact: String,
     pricing: { old_price: Number, new_price: Number },
     date: { type: Date, default: Date.now },
