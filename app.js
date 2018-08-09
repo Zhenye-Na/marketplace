@@ -1,10 +1,11 @@
 /* importing node module files */
-var express       = require("express"),
-    bodyParser    = require("body-parser"),
-    passport      = require("passport"),
-    LocalStrategy = require("passport-local"),
-    mongoose      = require("mongoose"),
-    seedDB        = require("./seeds");
+var express        = require("express"),
+    bodyParser     = require("body-parser"),
+    passport       = require("passport"),
+    LocalStrategy  = require("passport-local"),
+    methodOverride = require("method-override"),
+    mongoose       = require("mongoose"),
+    seedDB         = require("./seeds");
 
 
 /* importing databaes */
@@ -49,9 +50,9 @@ app.use(function(req, res, next) {
     next();
 });
 
+
 /* set the view engine to ejs */
 app.set('view engine', 'ejs');
-
 
 /* static pages configuration */
 app.use(express.static(__dirname + '/public'));
@@ -61,6 +62,7 @@ app.use(authRoutes);
 app.use("/items/:id/comments", commentRoutes);
 app.use("/items", itemRoutes);
 
+app.use(methodOverride('_method'));
 
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("Everything is working fine");
