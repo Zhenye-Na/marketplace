@@ -1,5 +1,8 @@
 // All the middleware goes here!
 
+var Product = require("../models/product"),
+    Comment = require("../models/comment");
+
 var middlewareObj = {};
 
 middlewareObj.checkProductOwnership = function(req, res, next) {
@@ -40,6 +43,14 @@ middlewareObj.checkCommentOwnership = function(req, res, next) {
     }
 };
 
+
+
+middlewareObj.isLoggedIn = function(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login");
+};
 
 
 module.exports = middlewareObj;

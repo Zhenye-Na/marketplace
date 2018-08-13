@@ -1,35 +1,9 @@
-var express = require("express"),
-    Product = require("../models/product");
+var express    = require("express"),
+    Product    = require("../models/product"),
+    middleware = require("../middleware");
 
 var router  = express.Router();
 
-
-// middleware
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
-
-function checkProductOnwership(req, res, next) {
-    if (req.isAuthenticated()) {
-        Product.findById(req.params.id, function(err, foundProduct) {
-            if (err) {
-                res.redirect("back");
-            } else {
-                // foundProduct.author.id.equals is a mongoose object
-                if (foundProduct.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect("back");
-                }
-            }
-        });
-    } else {
-        res.redirect("back");
-    }
-}
 
 
 // INDEX - Show all products
@@ -49,7 +23,7 @@ router.get("/",  function(req, res) {
 
 
 // CREATE - Add new product to database
-router.post("/", isLoggedIn, function(req, res) {
+router.post("/", middleware.isLoggedIn, function(req, res) {
     // get data
     var title = req.body.title;
     var image = req.body.image;
@@ -72,7 +46,7 @@ router.post("/", isLoggedIn, function(req, res) {
 
 
 // NEW - Show form to add new product
-router.get("/new", isLoggedIn, function(req, res) {
+router.get("/new", middleware.isLoggedIn, function(req, res) {
     res.render("products/new");
 });
 
@@ -92,7 +66,7 @@ router.get("/:id", function(req, res) {
 
 
 // Edit products
-router.get("/:id/edit", checkProductOnwership, function(req, res) {
+router.get("/:id/edit", middleware.checkProductOwnership, function(req, res) {
 
     Product.findById(req.params.id, function(err, foundProduct) {
         res.render("products/edit", {product: foundProduct});
@@ -100,7 +74,7 @@ router.get("/:id/edit", checkProductOnwership, function(req, res) {
 });
 
 // Update products
-router.put("/:id", checkProductOnwership, function(req, res) {
+router.put("/:id", middleware.checkProductOwnership, function(req, res) {
     // Find and update the product
     Product.findByIdAndUpdate(req.params.id, req.body.product, function(err, updatedProduct) {
         if (err) {
@@ -112,7 +86,7 @@ router.put("/:id", checkProductOnwership, function(req, res) {
 });
 
 // Destroy products
-router.delete("/:id", checkProductOnwership, function(req, res) {
+router.delete("/:id", middleware.checkProductOwnership, function(req, res) {
     Product.findByIdAndRemove(req.params.id, function(err) {
         if (err) {
             res.redirect("/items/");
