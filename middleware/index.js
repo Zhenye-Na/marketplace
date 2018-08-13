@@ -15,11 +15,13 @@ middlewareObj.checkProductOwnership = function(req, res, next) {
             if (foundProduct.author.id.equals(req.user._id)) {
                 next();
             } else {
+                req.flash("error", "您没有此权限！");
                 res.redirect("back");
             }
         }
     });
     } else {
+        req.flash("error", "请您先登陆再进行操作！");
         res.redirect("back");
     }
 };
@@ -34,11 +36,13 @@ middlewareObj.checkCommentOwnership = function(req, res, next) {
                 if (foundComment.author.id.equals(req.user._id)) {
                     next();
                 } else {
+                    req.flash("error", "您没有此权限！");
                     res.redirect("back");
                 }
             }
         });
     } else {
+        req.flash("error", "请您先登陆再进行操作！");
         res.redirect("back");
     }
 };
@@ -49,6 +53,7 @@ middlewareObj.isLoggedIn = function(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
+    req.flash("error", "请您先登陆再进行操作！");
     res.redirect("/login");
 };
 
