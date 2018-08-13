@@ -12,14 +12,14 @@ function isLoggedIn(req, res, next) {
     res.redirect("/login");
 }
 
-function checkOnwership(req, res, next) {
+function checkProductOnwership(req, res, next) {
     if (req.isAuthenticated()) {
         Product.findById(req.params.id, function(err, foundProduct) {
             if (err) {
                 res.redirect("back");
             } else {
                 // foundProduct.author.id.equals is a mongoose object
-                if (foundProduct.author.id.equals(req.user.id)) {
+                if (foundProduct.author.id.equals(req.user._id)) {
                     next();
                 } else {
                     res.redirect("back");
@@ -92,7 +92,7 @@ router.get("/:id", function(req, res) {
 
 
 // Edit products
-router.get("/:id/edit", checkOnwership, function(req, res) {
+router.get("/:id/edit", checkProductOnwership, function(req, res) {
 
     Product.findById(req.params.id, function(err, foundProduct) {
         res.render("products/edit", {product: foundProduct});
@@ -100,7 +100,7 @@ router.get("/:id/edit", checkOnwership, function(req, res) {
 });
 
 // Update products
-router.put("/:id", checkOnwership, function(req, res) {
+router.put("/:id", checkProductOnwership, function(req, res) {
     // Find and update the product
     Product.findByIdAndUpdate(req.params.id, req.body.product, function(err, updatedProduct) {
         if (err) {
@@ -112,8 +112,7 @@ router.put("/:id", checkOnwership, function(req, res) {
 });
 
 // Destroy products
-// router.delete throw "cannot DELETE" err
-router.post("/:id", checkOnwership, function(req, res) {
+router.delete("/:id", checkProductOnwership, function(req, res) {
     Product.findByIdAndRemove(req.params.id, function(err) {
         if (err) {
             res.redirect("/items/");

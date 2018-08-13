@@ -57,12 +57,10 @@ app.set('view engine', 'ejs');
 /* static pages configuration */
 app.use(express.static(__dirname + '/public'));
 
-
+app.use(methodOverride('_method'));
 app.use(authRoutes);
 app.use("/items/:id/comments", commentRoutes);
 app.use("/items", itemRoutes);
-
-app.use(methodOverride('_method'));
 
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("Everything is working fine");

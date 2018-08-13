@@ -30,7 +30,7 @@
                         <p><%= product.description %></p>
                         <!--<h4><%= product.title %></h4>-->
                         
-                        <% if (currentUser && product.author.id.equals(currentUser._id)) {%>
+                        <% if (currentUser && product.author.id.equals(currentUser._id)) { %>
                             <a class="btn btn-warning" href="/items/<%= product._id %>/edit">Edit</a>
                             <form id="delete-form" action="/items/<%= product._id %>?_method=DELETE" method="POST">
                                 <button class="btn btn-danger">Delete</button>
@@ -54,10 +54,17 @@
                             <p>
                                 <%= comment.text %>
                             </p>
-                            <a href="/items/<%= product._id %>/comments/<%= comment._id %>/edit"
-                               class="btn btn-xs btn-warning" >
-                                edit
-                            </a>
+
+                            <% if (currentUser && comment.author.id.equals(currentUser._id)) { %>
+                                <a href="/items/<%= product._id %>/comments/<%= comment._id %>/edit"
+                                   class="btn btn-xs btn-warning" >
+                                    edit
+                                </a>
+                                <form id="delete-form" action="/items/<%= product._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                    <input type="submit" class="btn btn-xs btn-danger" value="Delete">
+                                </form>
+                            <% } %>
+
                         </div>
                     </div>
                 <% }) %>
