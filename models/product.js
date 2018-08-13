@@ -19,7 +19,7 @@ var productSchema = new mongoose.Schema({
         username: String
     },
     contact: String,
-    pricing: { old_price: Number, new_price: Number },
+    pricing: Number,
     date: { type: Date, default: Date.now },
     meta: { votes: Number, favs:  Number }
 });

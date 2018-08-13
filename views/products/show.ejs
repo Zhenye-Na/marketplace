@@ -8,7 +8,7 @@
                 <p class="lead">MarketPlace</p>
                 <div class="list-group">
                     <li class="list-group-item"><%= product.title || "Not Available" %></li>
-                    <li class="list-group-item">Price {new & old}</li>
+                    <li class="list-group-item">$ <%= product.pricing || "原价"%></li>
                     <li class="list-group-item">Tags</li>
                     <li class="list-group-item">User info</li>
                     <li class="list-group-item">
@@ -26,7 +26,7 @@
                 <div class="thumbnail">
                     <img class="img-responsive" src="<%= product.image %>">
                     <div class="caption-full">
-                        <h4 class="pull-right">Price will be here!</h4>
+                        <!--<h4 class="pull-right">Price will be here!</h4>-->
                         <p><%= product.description %></p>
                         <!--<h4><%= product.title %></h4>-->
                         

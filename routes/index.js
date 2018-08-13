@@ -1,7 +1,7 @@
 var express  = require("express"),
     passport = require("passport"),
     User     = require("../models/user");
-var router = express.Router();
+var router   = express.Router();
 
 
 // Root Route
@@ -24,10 +24,11 @@ router.post("/signup", function(req, res) {
     });
     User.register(newUser, req.body.password, function(err, user) {
         if (err) {
-            console.log(err);
+            req.flash("error", err.message);
             return res.render("signup");
         }
         passport.authenticate("local")(req, res, function() {
+            req.flash("success", "您以注册成功！" + user.email);
             res.redirect("/items");
         });
     });
@@ -51,17 +52,9 @@ router.post("/login", passport.authenticate("local", {
 // Logout
 router.get("/logout", function(req, res) {
     req.logout();
+    req.flash("success", "您已登出成功！");
     res.redirect("/items");
 });
-
-
-// middleware
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
 
 
 module.exports = router;

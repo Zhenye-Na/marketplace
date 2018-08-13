@@ -25,12 +25,12 @@ router.get("/new", middleware.isLoggedIn, function(req, res) {
 router.post("/", middleware.isLoggedIn, function(req, res) {
     Product.findById(req.params.id, function(err, foundProduct) {
         if (err) {
-            console.log(err);
+            req.flash("error", err.message);
             res.redirect("/items");
         } else {
             Comment.create(req.body.comment, function(err, comment) {
                 if (err) {
-                    console.log(err);
+                    req.flash("error", err);
                 } else {
                     // add username and id to comment
                     comment.author.id = req.user._id;
@@ -39,6 +39,8 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
 
                     foundProduct.comments.push(comment);
                     foundProduct.save();
+                    
+                    req.flash("success", "添加评论成功！");
                     res.redirect("/items/" + foundProduct._id);
                 }
             });
@@ -76,6 +78,7 @@ router.delete("/:comment_id", middleware.checkCommentOwnership, function(req, re
         if (err) {
             res.redirect("back");
         } else {
+            req.flash("success", "评论删除成功！");
             res.redirect("/items/" + req.params.id);
         }
     });

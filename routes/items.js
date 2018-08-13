@@ -28,11 +28,12 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
     var title = req.body.title;
     var image = req.body.image;
     var desc = req.body.description;
+    var pricing = req.body.pricing;
     var author = {
         id: req.user._id,
         username: req.user.username
     };
-    var newProduct = {title: title, image: image, description: desc, author: author};
+    var newProduct = {title: title, image: image, description: desc, author: author, pricing: pricing};
 
     // create a new item and save to database
     Product.create(newProduct, function(err, newproduct) {
@@ -67,7 +68,6 @@ router.get("/:id", function(req, res) {
 
 // Edit products
 router.get("/:id/edit", middleware.checkProductOwnership, function(req, res) {
-
     Product.findById(req.params.id, function(err, foundProduct) {
         res.render("products/edit", {product: foundProduct});
     });

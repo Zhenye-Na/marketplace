@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="row">
-        <h3 style="text-align: center">Edit 闲置</h3>
+        <h3 style="text-align: center">修改闲置</h3>
         <div style="width: 30%; margin: 25px auto;">
             <form action="/items/<%= product._id %>?_method=PUT" method="POST">
                 <div class="form-group">
@@ -24,7 +24,15 @@
                            value="<%= product.description %>">
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-primary btn-block">Submit</button>
+                    <input class="form-control"
+                           type="number"
+                           name="product[pricing]"
+                           value=<%= product.pricing %>
+                           min="0.01"
+                           step="0.01">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block">提交</button>
                 </div>
             </form>
             <a href="/items">返回</a>
@@ -33,4 +41,4 @@
 </div>
 
 
-<!--<% include ../partials/footer %>-->
+<% include ../partials/footer %>

@@ -1,6 +1,7 @@
 /* importing node module files */
 var express        = require("express"),
     bodyParser     = require("body-parser"),
+    flash          = require('connect-flash'),
     passport       = require("passport"),
     LocalStrategy  = require("passport-local"),
     methodOverride = require("method-override"),
@@ -32,6 +33,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+app.use(methodOverride('_method'));
+app.use(flash());
+
+
+/* set the view engine to ejs */
+app.set('view engine', 'ejs');
+
+/* static pages configuration */
+app.use(express.static(__dirname + '/public'));
+
+
 /* passport authenticator initialization */
 app.use(require("express-session")({
     secret: "Launched by Zhenye Na in Aug. 2018 in Urbana, U.S.",
@@ -47,20 +59,16 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req, res, next) {
     res.locals.currentUser = req.user;
+    res.locals.error       = req.flash("error");
+    res.locals.success     = req.flash("success");
     next();
 });
 
 
-/* set the view engine to ejs */
-app.set('view engine', 'ejs');
-
-/* static pages configuration */
-app.use(express.static(__dirname + '/public'));
-
-app.use(methodOverride('_method'));
 app.use(authRoutes);
 app.use("/items/:id/comments", commentRoutes);
 app.use("/items", itemRoutes);
+
 
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("Everything is working fine");
