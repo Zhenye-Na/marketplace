@@ -1,16 +1,28 @@
 <% include partials/header %>
 
-<h1>Log in</h1>
 
-<form action="/login" method="POST">
-    <div class="form-group">
-        <input type="text"
-               name="username">
+<div class="container">
+    <div class="row">
+        <h3 style="text-align: center">登陆</h3>
+        <div style="width: 30%; margin: 25px auto;">
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <input class="form-control"
+                           type="text"
+                           name="username"
+                           placeholder="用户名／邮箱">
+                </div>
+                <div class="form-group">
+                    <input class="form-control"
+                           type="password"
+                           name="password"
+                           placeholder="密码">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block">登陆</button>
+                </div>
+            </form>
+            <a href="/items">返回</a>
+        </div>
     </div>
-    <div class="form-group">
-        <input type="password" name="password" placeholder="password">
-    </div>
-    <div class="form-group">
-        <button>Log in</button>
-    </div>
-</form>
+</div>
