@@ -26,7 +26,7 @@ var commentRoutes = require("./routes/comments"),
 /* express server configuration */
 var app = express();
 // mongoose.connect("mongodb://localhost:27017/marketplace", { useNewUrlParser: true });
-mongoose.connect("mongodb://<dbusername>:<dbpassword>@ds119732.mlab.com:19732/heroku_9nr1qffn", { useNewUrlParser: true });
+mongoose.connect("mongodb://<dbusername>:<dbpassword>@dsXXXXXX.mlab.com:XXXXXX/XXXXXXXXX", { useNewUrlParser: true });
 
 
 /* body parser configuration */
